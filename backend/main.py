@@ -2,10 +2,12 @@ import uvicorn
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from storage.db import init_db
 from api.workflows import router as workflows_router
 from api.execution import router as execution_router
 from api.models import router as models_router
+from services.vscode import open_file, open_folder
 
 
 @asynccontextmanager
@@ -32,6 +34,20 @@ app.include_router(models_router)
 @app.get("/api/health")
 async def health():
     return {"status": "ok"}
+
+
+class VSCodeOpenRequest(BaseModel):
+    file_path: str | None = None
+    folder_path: str | None = None
+
+
+@app.post("/api/vscode/open")
+async def vscode_open(req: VSCodeOpenRequest):
+    if req.folder_path:
+        return open_folder(req.folder_path)
+    if req.file_path:
+        return open_file(req.file_path)
+    return {"success": False, "error": "file_path or folder_path required"}
 
 
 if __name__ == "__main__":
