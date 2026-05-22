@@ -67,14 +67,68 @@ class WorkflowExecutor:
 
         return f"[Unknown node type: {node_type}]"
 
+    @staticmethod
+    def _format_references(refs: list[dict]) -> str:
+        """将文献列表格式化为编号引用文本。"""
+        lines = []
+        for i, ref in enumerate(refs, 1):
+            authors = ref.get("authors", [])
+            if isinstance(authors, list):
+                author_str = ", ".join(authors[:3])
+                if len(authors) > 3:
+                    author_str += " et al."
+            else:
+                author_str = str(authors)
+
+            title = ref.get("title", "")
+            journal = ref.get("journal", "")
+            year = ref.get("year", "")
+            volume = ref.get("volume", "")
+            number = ref.get("number", "")
+            pages = ref.get("pages", "")
+            doi = ref.get("doi", "")
+
+            parts = [f"[{i}]"]
+            if author_str:
+                parts.append(f"{author_str}.")
+            if title:
+                parts.append(f"{title}.")
+
+            journal_parts = []
+            if journal:
+                journal_parts.append(journal)
+            if year:
+                journal_parts.append(year)
+            if volume:
+                v = volume
+                if number:
+                    v += f"({number})"
+                journal_parts.append(v)
+            if pages:
+                journal_parts.append(pages)
+            if journal_parts:
+                parts.append(", ".join(journal_parts) + ".")
+            if doi:
+                parts.append(f"doi:{doi}")
+
+            lines.append(" ".join(parts))
+        return "\n".join(lines)
+
     async def execute(
         self,
         workflow_def: dict,
         provider_map: dict[str, LLMProvider],
         on_node_complete=None,
+        refs: list[dict] | None = None,
     ) -> dict:
         """按拓扑顺序执行工作流。provider_map: node_id -> LLMProvider"""
         self._stop_requested = False
+
+        # 注入参考文献为全局变量
+        if refs:
+            formatted = self._format_references(refs)
+            self.context.set_global("references", formatted)
+
         nodes = {n["id"]: WorkflowNode(**n) for n in workflow_def.get("nodes", [])}
         edges = workflow_def.get("edges", [])
         execution_order = self._topological_sort(list(nodes.keys()), edges)

@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 from engine import WorkflowExecutor
 from providers.base import LLMProvider
-from storage.db import get_workflow
+from storage.db import get_workflow, list_refs
 
 router = APIRouter(prefix="/api/execution", tags=["execution"])
 
@@ -11,6 +11,7 @@ router = APIRouter(prefix="/api/execution", tags=["execution"])
 class ExecuteRequest(BaseModel):
     workflow_id: str
     provider_overrides: dict[str, dict] = {}
+    use_references: bool = False
 
 
 @router.post("/run")
@@ -37,8 +38,13 @@ async def run_workflow(req: ExecuteRequest):
                     data["provider"], data["api_key"], data.get("model", ""),
                 )
 
+    # Load references if requested
+    refs = None
+    if req.use_references:
+        refs = await list_refs()
+
     executor = WorkflowExecutor()
-    results = await executor.execute(wf_data, provider_map)
+    results = await executor.execute(wf_data, provider_map, refs=refs)
     return {"workflow_id": req.workflow_id, "results": results}
 
 

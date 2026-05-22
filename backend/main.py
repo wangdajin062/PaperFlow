@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from api.execution import router as execution_router
 from api.models import router as models_router
+from api.references import router as references_router
 from api.workflows import router as workflows_router
 from services.vscode import open_file, open_folder
 from storage.db import init_db
@@ -31,6 +32,7 @@ app.add_middleware(
 app.include_router(workflows_router)
 app.include_router(execution_router)
 app.include_router(models_router)
+app.include_router(references_router)
 
 
 @app.get("/api/health")

@@ -10,10 +10,15 @@ def _get_edge_target(e: Any) -> str:
 
 
 class ExecutionContext:
-    """Cross-node data passing context."""
+    """Cross-node data passing context with global variable support."""
 
     def __init__(self):
         self._data: dict[str, Any] = {}
+        self._globals: dict[str, str] = {}
+
+    def set_global(self, key: str, value: str):
+        """Set a global variable available to all nodes."""
+        self._globals[key] = value
 
     def set_node_output(self, node_id: str, output: Any):
         self._data[node_id] = output
@@ -25,6 +30,8 @@ class ExecutionContext:
         return dict(self._data)
 
     def get_upstream_outputs(self, node_id: str, edges: list) -> dict:
-        """Get outputs from all upstream nodes of the given node."""
+        """Get outputs from upstream nodes, merged with global variables."""
         upstream_ids = {_get_edge_source(e) for e in edges if _get_edge_target(e) == node_id}
-        return {uid: self._data.get(uid) for uid in upstream_ids if uid in self._data}
+        upstream = {uid: self._data.get(uid) for uid in upstream_ids if uid in self._data}
+        # Global variables are available to every node, upstream outputs take priority
+        return {**self._globals, **upstream}

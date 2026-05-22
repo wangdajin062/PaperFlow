@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { api } from '../utils/api';
 import { __getWorkflowData, __setWorkflowNodes, __setWorkflowEdges } from './WorkflowEditor';
-import { PaperWritingWorkflow } from '../templates/paper-workflow';
+import { UIUXDesignWorkflow } from '../templates/uiux-workflow';
 import type { WorkflowNode } from '../types/workflow';
 
 interface ToolbarProps {
@@ -61,7 +61,7 @@ export default function Toolbar({ workflowId, onWorkflowSaved }: ToolbarProps) {
   };
 
   const handleLoadTemplate = () => {
-    const { nodes, edges } = PaperWritingWorkflow;
+    const { nodes, edges } = UIUXDesignWorkflow;
     __setWorkflowNodes([...nodes]);
     __setWorkflowEdges([...edges]);
   };
