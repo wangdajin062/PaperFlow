@@ -1,0 +1,769 @@
+/* ========================================
+   PaperFlow - Global Styles
+   ======================================== */
+
+/* --- CSS Variables --- */
+:root {
+  --sidebar-width: 280px;
+  --panel-width: 360px;
+  --toolbar-height: 56px;
+
+  --bg-primary: #1a1b1e;
+  --bg-secondary: #25262b;
+  --bg-tertiary: #2c2e33;
+  --bg-surface: #373a40;
+
+  --text-primary: #c1c2c5;
+  --text-secondary: #909296;
+  --text-muted: #5c5f66;
+
+  --accent: #4c9af5;
+  --accent-hover: #3a8ae5;
+  --accent-bg: rgba(76, 154, 245, 0.12);
+
+  --border-color: #373a40;
+  --border-light: #2c2e33;
+
+  --danger: #e74c3c;
+  --success: #2ecc71;
+  --warning: #f39c12;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+  --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+}
+
+/* --- Reset & Base --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input, textarea, select, button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-surface);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ========================================
+   App Layout
+   ======================================== */
+
+.app-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* ========================================
+   Sidebar (Left)
+   ======================================== */
+
+.sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  height: var(--toolbar-height);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border-color);
+  letter-spacing: 0.5px;
+  user-select: none;
+}
+
+/* ========================================
+   Main Area (Center)
+   ======================================== */
+
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* ========================================
+   Toolbar
+   ======================================== */
+
+.toolbar {
+  height: var(--toolbar-height);
+  min-height: var(--toolbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  gap: 12px;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.toolbar-btn:hover {
+  background: var(--bg-surface);
+  border-color: var(--text-muted);
+}
+
+.toolbar-btn:active {
+  transform: scale(0.97);
+}
+
+.toolbar-btn.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.toolbar-btn.primary:hover {
+  background: var(--accent-hover);
+}
+
+.toolbar-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.workflow-title-input {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  outline: none;
+  min-width: 200px;
+  transition: border-color var(--transition-fast);
+}
+
+.workflow-title-input:hover {
+  border-color: var(--border-color);
+}
+
+.workflow-title-input:focus {
+  border-color: var(--accent);
+}
+
+.save-indicator {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.save-indicator.saving {
+  color: var(--warning);
+}
+
+.save-indicator.saved {
+  color: var(--success);
+}
+
+/* ========================================
+   Canvas Area
+   ======================================== */
+
+.canvas-area {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg-primary);
+}
+
+.canvas-area .react-flow__background {
+  background: var(--bg-primary);
+}
+
+.canvas-area .react-flow__attribution {
+  display: none;
+}
+
+/* ========================================
+   Node Palette (in Sidebar)
+   ======================================== */
+
+.node-palette {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.node-palette-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.palette-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-light);
+  cursor: grab;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.palette-item:hover {
+  background: var(--bg-surface);
+  border-color: var(--text-muted);
+}
+
+.palette-item:active {
+  cursor: grabbing;
+  transform: scale(0.97);
+}
+
+.palette-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.palette-item-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.palette-item-icon.prompt {
+  background: rgba(76, 154, 245, 0.2);
+  color: #4c9af5;
+}
+
+.palette-item-icon.code {
+  background: rgba(46, 204, 113, 0.2);
+  color: #2ecc71;
+}
+
+.palette-item-icon.output {
+  background: rgba(243, 156, 18, 0.2);
+  color: #f39c12;
+}
+
+.palette-item-icon.start {
+  background: rgba(155, 89, 182, 0.2);
+  color: #9b59b6;
+}
+
+.palette-item-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.palette-item-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* ========================================
+   Right Panel
+   ======================================== */
+
+.panel {
+  width: var(--panel-width);
+  min-width: var(--panel-width);
+  height: 100vh;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  height: var(--toolbar-height);
+  min-height: var(--toolbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+/* ========================================
+   ReactFlow Node Styles
+   ======================================== */
+
+.react-flow__node {
+  cursor: pointer;
+}
+
+.custom-node {
+  min-width: 180px;
+  max-width: 280px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+  overflow: hidden;
+}
+
+.custom-node:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.custom-node.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), var(--shadow-md);
+}
+
+/* Prompt node */
+.prompt-node {
+  border-color: rgba(76, 154, 245, 0.5);
+}
+
+.prompt-node.selected {
+  border-color: #4c9af5;
+}
+
+.prompt-node .node-header {
+  background: rgba(76, 154, 245, 0.15);
+  color: #4c9af5;
+}
+
+/* Code node */
+.code-node {
+  border-color: rgba(46, 204, 113, 0.5);
+}
+
+.code-node.selected {
+  border-color: #2ecc71;
+}
+
+.code-node .node-header {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+}
+
+/* Output node */
+.output-node {
+  border-color: rgba(243, 156, 18, 0.5);
+}
+
+.output-node.selected {
+  border-color: #f39c12;
+}
+
+.output-node .node-header {
+  background: rgba(243, 156, 18, 0.15);
+  color: #f39c12;
+}
+
+/* Start node */
+.start-node {
+  border-color: rgba(155, 89, 182, 0.5);
+  border-radius: 50%;
+  min-width: 60px;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.start-node.selected {
+  border-color: #9b59b6;
+}
+
+.start-node .node-header {
+  background: rgba(155, 89, 182, 0.15);
+  color: #9b59b6;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.node-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.node-header svg {
+  width: 14px;
+  height: 14px;
+}
+
+.node-body {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  max-height: 120px;
+  overflow-y: auto;
+  word-break: break-word;
+}
+
+.node-body p {
+  margin: 0;
+}
+
+.node-handle {
+  width: 10px !important;
+  height: 10px !important;
+  border: 2px solid var(--bg-primary) !important;
+  background: var(--text-muted) !important;
+  transition: background var(--transition-fast);
+}
+
+.node-handle:hover {
+  background: var(--accent) !important;
+}
+
+/* ========================================
+   Chat Panel Styles
+   ======================================== */
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-message {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 90%;
+}
+
+.chat-message.user {
+  background: var(--accent-bg);
+  color: var(--text-primary);
+  align-self: flex-end;
+  border: 1px solid rgba(76, 154, 245, 0.2);
+}
+
+.chat-message.assistant {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  align-self: flex-start;
+  border: 1px solid var(--border-light);
+}
+
+.chat-input-area {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  outline: none;
+  resize: none;
+  min-height: 36px;
+  max-height: 120px;
+  font-size: 13px;
+  transition: border-color var(--transition-fast);
+}
+
+.chat-input:focus {
+  border-color: var(--accent);
+}
+
+.chat-send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.chat-send-btn:hover {
+  background: var(--accent-hover);
+}
+
+.chat-send-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ========================================
+   Node Config Panel Styles
+   ======================================== */
+
+.config-section {
+  margin-bottom: 20px;
+}
+
+.config-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.config-field {
+  margin-bottom: 12px;
+}
+
+.config-label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.config-input,
+.config-textarea,
+.config-select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  outline: none;
+  font-size: 13px;
+  transition: border-color var(--transition-fast);
+}
+
+.config-input:focus,
+.config-textarea:focus,
+.config-select:focus {
+  border-color: var(--accent);
+}
+
+.config-textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.config-select {
+  cursor: pointer;
+}
+
+/* ========================================
+   Model Config Styles
+   ======================================== */
+
+.model-config {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.model-config-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-light);
+}
+
+.model-config-item.active {
+  border-color: rgba(76, 154, 245, 0.4);
+}
+
+.model-config-info {
+  flex: 1;
+}
+
+.model-config-name {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.model-config-provider {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ========================================
+   Utility Classes
+   ======================================== */
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-2 {
+  gap: 8px;
+}
+
+.gap-4 {
+  gap: 16px;
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-sm {
+  font-size: 12px;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
