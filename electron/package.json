@@ -2,6 +2,7 @@
   "name": "paper-flow-desktop",
   "version": "0.1.0",
   "description": "PaperFlow - 科研论文写作工作流编排引擎",
+  "author": "PaperFlow Team",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -61,10 +62,8 @@
       "shortcutName": "PaperFlow"
     }
   },
-  "dependencies": {
-    "electron": "^33.3.1"
-  },
   "devDependencies": {
+    "electron": "^33.3.1",
     "electron-builder": "^26.8.1"
   }
 }
