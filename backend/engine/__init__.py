@@ -1,4 +1,4 @@
 from .executor import WorkflowExecutor
-from .nodes import WorkflowNode, WorkflowEdge, WorkflowDef
+from .nodes import WorkflowDef, WorkflowEdge, WorkflowNode
 
 __all__ = ["WorkflowExecutor", "WorkflowNode", "WorkflowEdge", "WorkflowDef"]

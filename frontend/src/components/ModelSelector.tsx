@@ -1,5 +1,3 @@
-import { useState, useEffect } from 'react';
-import { api } from '../utils/api';
 
 const PROVIDERS = [
   { value: 'claude', label: 'Claude (Anthropic)' },

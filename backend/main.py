@@ -1,13 +1,15 @@
-import uvicorn
 from contextlib import asynccontextmanager
+
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from storage.db import init_db
-from api.workflows import router as workflows_router
+
 from api.execution import router as execution_router
 from api.models import router as models_router
+from api.workflows import router as workflows_router
 from services.vscode import open_file, open_folder
+from storage.db import init_db
 
 
 @asynccontextmanager

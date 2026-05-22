@@ -1,7 +1,7 @@
-import aiosqlite
 import json
 from pathlib import Path
-from typing import Optional
+
+import aiosqlite
 
 DB_PATH = Path(__file__).parent.parent / "paperflow.db"
 
@@ -84,7 +84,7 @@ async def list_workflows() -> list[dict]:
         await db.close()
 
 
-async def get_workflow(workflow_id: str) -> Optional[dict]:
+async def get_workflow(workflow_id: str) -> dict | None:
     db = await get_db()
     try:
         cursor = await db.execute("SELECT * FROM workflows WHERE id = ?", (workflow_id,))

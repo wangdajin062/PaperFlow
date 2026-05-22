@@ -1,6 +1,7 @@
 import asyncio
-from typing import Optional
+
 from google import genai
+
 from .base import LLMProvider
 
 
@@ -13,7 +14,7 @@ class GeminiProvider(LLMProvider):
     def provider_name(self) -> str:
         return "gemini"
 
-    async def chat(self, prompt: str, system_prompt: Optional[str] = None) -> str:
+    async def chat(self, prompt: str, system_prompt: str | None = None) -> str:
         model = self.model_name or "gemini-2.0-flash"
         contents = [{"role": "user", "parts": [{"text": prompt}]}]
         kwargs = {"model": model, "contents": contents}
@@ -22,7 +23,7 @@ class GeminiProvider(LLMProvider):
         resp = await asyncio.to_thread(self._client.models.generate_content, **kwargs)
         return resp.text or ""
 
-    async def chat_stream(self, prompt: str, system_prompt: Optional[str] = None):
+    async def chat_stream(self, prompt: str, system_prompt: str | None = None):
         model = self.model_name or "gemini-2.0-flash"
         contents = [{"role": "user", "parts": [{"text": prompt}]}]
         kwargs = {"model": model, "contents": contents}

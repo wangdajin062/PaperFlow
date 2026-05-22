@@ -1,3 +1,5 @@
+import type { Workflow, ExecutionResults } from '../types/workflow';
+
 const API_BASE = '/api';
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
@@ -13,25 +15,24 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  // Workflows
-  listWorkflows: () => request<any[]>('/workflows'),
-  getWorkflow: (id: string) => request<any>(`/workflows/${id}`),
-  createWorkflow: (data: any) =>
-    request<any>('/workflows', { method: 'POST', body: JSON.stringify(data) }),
-  updateWorkflow: (id: string, data: any) =>
-    request<any>(`/workflows/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  deleteWorkflow: (id: string) =>
-    request<any>(`/workflows/${id}`, { method: 'DELETE' }),
-
-  // Execution
-  runWorkflow: (workflowId: string, providerOverrides?: Record<string, any>) =>
-    request<any>('/execution/run', {
-      method: 'POST',
-      body: JSON.stringify({ workflow_id: workflowId, provider_overrides: providerOverrides || {} }),
+  listWorkflows: () => request<{ workflows: Workflow[] }>('/workflows'),
+  getWorkflow: (id: string) => request<Workflow>(`/workflows/${id}`),
+  createWorkflow: (data: Partial<Workflow>) =>
+    request<Workflow>('/workflows', { method: 'POST', body: JSON.stringify(data) }),
+  updateWorkflow: (id: string, data: Partial<Workflow>) =>
+    request<Workflow>(`/workflows/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
     }),
+  deleteWorkflow: (id: string) =>
+    request<{ ok: boolean }>(`/workflows/${id}`, { method: 'DELETE' }),
 
-  // Models
-  listModelConfigs: () => request<any[]>('/models'),
-  saveModelConfig: (data: any) =>
-    request<any>('/models', { method: 'POST', body: JSON.stringify(data) }),
+  runWorkflow: (workflowId: string, providerOverrides?: Record<string, unknown>) =>
+    request<ExecutionResults>('/execution/run', {
+      method: 'POST',
+      body: JSON.stringify({
+        workflow_id: workflowId,
+        provider_overrides: providerOverrides || {},
+      }),
+    }),
 };

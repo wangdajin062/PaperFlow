@@ -1,4 +1,4 @@
-from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -13,8 +13,8 @@ class WorkflowEdge(BaseModel):
     id: str
     source: str
     target: str
-    source_handle: Optional[str] = None
-    target_handle: Optional[str] = None
+    source_handle: str | None = None
+    target_handle: str | None = None
 
 
 class WorkflowDef(BaseModel):

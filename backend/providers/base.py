@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 
 class LLMProvider(ABC):
@@ -8,11 +7,11 @@ class LLMProvider(ABC):
         self.model_name = model_name
 
     @abstractmethod
-    async def chat(self, prompt: str, system_prompt: Optional[str] = None) -> str:
+    async def chat(self, prompt: str, system_prompt: str | None = None) -> str:
         ...
 
     @abstractmethod
-    async def chat_stream(self, prompt: str, system_prompt: Optional[str] = None):
+    async def chat_stream(self, prompt: str, system_prompt: str | None = None):
         """Async generator yielding text chunks."""
         yield ""  # pragma: no cover
 
@@ -24,9 +23,9 @@ class LLMProvider(ABC):
     @staticmethod
     def get_provider(provider: str, api_key: str, model_name: str = "") -> "LLMProvider":
         from .claude import ClaudeProvider
-        from .openai import OpenAIProvider
-        from .gemini import GeminiProvider
         from .deepseek import DeepSeekProvider
+        from .gemini import GeminiProvider
+        from .openai import OpenAIProvider
 
         mapping = {
             "claude": ClaudeProvider,

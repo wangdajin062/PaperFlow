@@ -1,5 +1,6 @@
-from typing import Optional
+
 from anthropic import AsyncAnthropic
+
 from .base import LLMProvider
 
 
@@ -12,7 +13,7 @@ class ClaudeProvider(LLMProvider):
     def provider_name(self) -> str:
         return "claude"
 
-    async def chat(self, prompt: str, system_prompt: Optional[str] = None) -> str:
+    async def chat(self, prompt: str, system_prompt: str | None = None) -> str:
         kwargs = {
             "model": self.model_name or "claude-sonnet-4-20250514",
             "max_tokens": 4096,
@@ -23,7 +24,7 @@ class ClaudeProvider(LLMProvider):
         resp = await self._client.messages.create(**kwargs)
         return resp.content[0].text
 
-    async def chat_stream(self, prompt: str, system_prompt: Optional[str] = None):
+    async def chat_stream(self, prompt: str, system_prompt: str | None = None):
         kwargs = {
             "model": self.model_name or "claude-sonnet-4-20250514",
             "max_tokens": 4096,

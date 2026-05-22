@@ -1,0 +1,21 @@
+[project]
+name = "paper-flow-backend"
+version = "0.1.0"
+description = "PaperFlow backend - 科研论文写作工作流编排引擎"
+requires-python = ">=3.11"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "S", "B", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["S101"]
+"services/vscode.py" = ["S603"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

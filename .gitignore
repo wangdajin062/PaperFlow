@@ -1,8 +1,42 @@
-node_modules/
-dist/
-.env
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
-*.db
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+backend/.venv/
+
+# Node
+node_modules/
 .vite/
+npm-debug.log*
+
+# Electron
+electron/release/
+electron/*.log
+electron/driver.mjs
+
+# Environment
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Database
+*.db
+*.sqlite3
+
+# Build
+screenshots/
+*.tsbuildinfo

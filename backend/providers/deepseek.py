@@ -1,7 +1,7 @@
-from typing import Optional
-from openai import AsyncOpenAI
-from .base import LLMProvider
 
+from openai import AsyncOpenAI
+
+from .base import LLMProvider
 
 DEEPSEEK_BASE_URL = "https://api.deepseek.com/v1"
 
@@ -15,7 +15,7 @@ class DeepSeekProvider(LLMProvider):
     def provider_name(self) -> str:
         return "deepseek"
 
-    async def chat(self, prompt: str, system_prompt: Optional[str] = None) -> str:
+    async def chat(self, prompt: str, system_prompt: str | None = None) -> str:
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
@@ -26,7 +26,7 @@ class DeepSeekProvider(LLMProvider):
         )
         return resp.choices[0].message.content or ""
 
-    async def chat_stream(self, prompt: str, system_prompt: Optional[str] = None):
+    async def chat_stream(self, prompt: str, system_prompt: str | None = None):
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})

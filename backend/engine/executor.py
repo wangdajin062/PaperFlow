@@ -1,7 +1,9 @@
 import logging
-from collections import deque, defaultdict
-from typing import Any, Optional
+from collections import defaultdict, deque
+from typing import Any
+
 from providers.base import LLMProvider
+
 from .context import ExecutionContext
 from .nodes import WorkflowNode
 
@@ -28,7 +30,7 @@ class WorkflowExecutor:
         self,
         node: WorkflowNode,
         upstream_context: dict,
-        provider: Optional[LLMProvider] = None,
+        provider: LLMProvider | None = None,
     ) -> str:
         if self._stop_requested:
             return "[Execution stopped]"

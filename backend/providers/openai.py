@@ -1,5 +1,6 @@
-from typing import Optional
+
 from openai import AsyncOpenAI
+
 from .base import LLMProvider
 
 
@@ -12,7 +13,7 @@ class OpenAIProvider(LLMProvider):
     def provider_name(self) -> str:
         return "openai"
 
-    async def chat(self, prompt: str, system_prompt: Optional[str] = None) -> str:
+    async def chat(self, prompt: str, system_prompt: str | None = None) -> str:
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
@@ -23,7 +24,7 @@ class OpenAIProvider(LLMProvider):
         )
         return resp.choices[0].message.content or ""
 
-    async def chat_stream(self, prompt: str, system_prompt: Optional[str] = None):
+    async def chat_stream(self, prompt: str, system_prompt: str | None = None):
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})

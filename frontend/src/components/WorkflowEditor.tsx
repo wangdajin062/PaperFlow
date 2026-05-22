@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 import ReactFlow, {
   useNodesState,
   useEdgesState,
@@ -15,14 +15,16 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { nodeTypes } from './nodeTypes';
 
-// Module-level accessors for Toolbar/Template access (Tasks 8, 12)
-let _getWorkflowData: (() => { nodes: Node[]; edges: Edge[] }) | null = null;
-let _setWorkflowNodes: ((nodes: Node[]) => void) | null = null;
-let _setWorkflowEdges: ((edges: Edge[]) => void) | null = null;
+// Module-level accessors via refs — set once from component, always up-to-date
+const accessors = {
+  getData: null as (() => { nodes: Node[]; edges: Edge[] }) | null,
+  setNodes: null as ((nodes: Node[]) => void) | null,
+  setEdges: null as ((edges: Edge[]) => void) | null,
+};
 
-export const __getWorkflowData = () => _getWorkflowData?.();
-export const __setWorkflowNodes = (nodes: Node[]) => _setWorkflowNodes?.(nodes);
-export const __setWorkflowEdges = (edges: Edge[]) => _setWorkflowEdges?.(edges);
+export const __getWorkflowData = () => accessors.getData?.();
+export const __setWorkflowNodes = (nodes: Node[]) => accessors.setNodes?.(nodes);
+export const __setWorkflowEdges = (edges: Edge[]) => accessors.setEdges?.(edges);
 
 const initialNodes: Node[] = [
   {
@@ -45,10 +47,12 @@ function WorkflowEditorInner({ onNodeSelect }: WorkflowEditorProps) {
 
   const getWorkflowData = useCallback(() => ({ nodes, edges }), [nodes, edges]);
 
-  // Store accessors in module-level variables
-  _getWorkflowData = getWorkflowData;
-  _setWorkflowNodes = setNodes;
-  _setWorkflowEdges = setEdges;
+  // Sync module-level accessors in an effect instead of during render
+  useEffect(() => {
+    accessors.getData = getWorkflowData;
+    accessors.setNodes = setNodes;
+    accessors.setEdges = setEdges;
+  }, [getWorkflowData, setNodes, setEdges]);
 
   const onConnect = useCallback(
     (connection: Connection) => {

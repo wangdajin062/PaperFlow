@@ -1,10 +1,9 @@
-import subprocess
 import shutil
+import subprocess
 from pathlib import Path
-from typing import Optional
 
 
-def _find_vscode() -> Optional[str]:
+def _find_vscode() -> str | None:
     """查找 VS Code 可执行文件路径"""
     candidates = [
         r"C:\Program Files\Microsoft VS Code\bin\code.cmd",
@@ -19,7 +18,7 @@ def _find_vscode() -> Optional[str]:
     return shutil.which("code")
 
 
-def open_file(file_path: str, line: Optional[int] = None) -> dict:
+def open_file(file_path: str, line: int | None = None) -> dict:
     """在 VS Code 中打开文件"""
     vscode = _find_vscode()
     if not vscode:
@@ -32,11 +31,11 @@ def open_file(file_path: str, line: Optional[int] = None) -> dict:
 
     args = [vscode, str(path)]
     if line is not None:
-        args.insert(1, f"--goto")
+        args.insert(1, "--goto")
         args.append(f"{path}:{line}")
 
     try:
-        subprocess.Popen(args, shell=True)
+        subprocess.Popen(args)
         return {"success": True, "path": str(path)}
     except Exception as e:
         return {"success": False, "error": str(e)}
@@ -52,7 +51,7 @@ def open_folder(folder_path: str) -> dict:
     path.mkdir(parents=True, exist_ok=True)
 
     try:
-        subprocess.Popen([vscode, str(path)], shell=True)
+        subprocess.Popen([vscode, str(path)])
         return {"success": True, "path": str(path)}
     except Exception as e:
         return {"success": False, "error": str(e)}

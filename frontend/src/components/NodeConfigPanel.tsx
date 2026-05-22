@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import ModelSelector from './ModelSelector';
 import { __getWorkflowData, __setWorkflowNodes } from './WorkflowEditor';
 
@@ -7,6 +7,8 @@ interface NodeConfigPanelProps {
   onChatMessage: (msg: { role: string; content: string }) => void;
 }
 
+type NodeData = Record<string, unknown>;
+
 const NODE_LABELS: Record<string, string> = {
   prompt: 'Prompt 节点',
   code: 'Code 节点',
@@ -14,24 +16,35 @@ const NODE_LABELS: Record<string, string> = {
   start: 'Start 节点',
 };
 
-export default function NodeConfigPanel({ nodeId, onChatMessage }: NodeConfigPanelProps) {
-  const [nodeType, setNodeType] = useState<string>('');
-  const [localData, setLocalData] = useState<Record<string, any>>({});
+function initFromNode(nodeId: string): { nodeType: string; nodeData: NodeData } {
+  const wf = __getWorkflowData();
+  if (!wf) return { nodeType: '', nodeData: {} };
+  const node = wf.nodes.find((n) => n.id === nodeId);
+  return { nodeType: node?.type || '', nodeData: (node?.data as NodeData) || {} };
+}
 
-  // Load node data from workflow state when nodeId changes
+export default function NodeConfigPanel({ nodeId, onChatMessage }: NodeConfigPanelProps) {
+  const [nodeType, setNodeType] = useState(() => initFromNode(nodeId).nodeType);
+  const [localData, setLocalData] = useState<NodeData>(() => initFromNode(nodeId).nodeData);
+  const prevNodeId = useRef(nodeId);
+
+  // Safely read string values from node data
+  const val = (key: string, fallback = ''): string =>
+    (localData[key] as string | undefined) ?? fallback;
+
+  // Sync local state when selected node changes
   useEffect(() => {
-    const wf = __getWorkflowData();
-    if (!wf) return;
-    const node = wf.nodes.find((n) => n.id === nodeId);
-    if (node) {
-      setNodeType(node.type || '');
-      setLocalData({ ...node.data });
-    }
+    if (nodeId === prevNodeId.current) return;
+    prevNodeId.current = nodeId;
+    const { nodeType: nt, nodeData } = initFromNode(nodeId);
+    setNodeType(nt);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLocalData(nodeData);
   }, [nodeId]);
 
   // Sync a single field to workflow node data
   const syncField = useCallback(
-    (key: string, value: any) => {
+    (key: string, value: unknown) => {
       setLocalData((prev) => ({ ...prev, [key]: value }));
 
       const wf = __getWorkflowData();
@@ -104,7 +117,7 @@ export default function NodeConfigPanel({ nodeId, onChatMessage }: NodeConfigPan
               <label className="config-label">系统提示词</label>
               <textarea
                 className="config-textarea"
-                value={localData.system_prompt || ''}
+                value={val('system_prompt')}
                 onChange={(e) => syncField('system_prompt', e.target.value)}
                 placeholder="系统角色设定、行为约束等..."
                 rows={3}
@@ -115,7 +128,7 @@ export default function NodeConfigPanel({ nodeId, onChatMessage }: NodeConfigPan
               <label className="config-label">提示词模板</label>
               <textarea
                 className="config-textarea"
-                value={localData.prompt || ''}
+                value={val('prompt')}
                 onChange={(e) => syncField('prompt', e.target.value)}
                 placeholder="输入提示词内容，可使用 {{变量}} 模板语法..."
                 rows={4}
@@ -126,8 +139,8 @@ export default function NodeConfigPanel({ nodeId, onChatMessage }: NodeConfigPan
 
             <div className="config-field">
               <ModelSelector
-                provider={localData.provider || ''}
-                modelName={localData.model || ''}
+                provider={val('provider')}
+                modelName={val('model')}
                 onChange={handleModelChange}
               />
             </div>
@@ -137,7 +150,7 @@ export default function NodeConfigPanel({ nodeId, onChatMessage }: NodeConfigPan
               <input
                 className="config-input"
                 type="password"
-                value={localData.api_key || ''}
+                value={val('api_key')}
                 onChange={(e) => syncField('api_key', e.target.value)}
                 placeholder="输入 API Key..."
               />
@@ -154,7 +167,7 @@ export default function NodeConfigPanel({ nodeId, onChatMessage }: NodeConfigPan
               <label className="config-label">任务描述</label>
               <textarea
                 className="config-textarea"
-                value={localData.description || ''}
+                value={val('description')}
                 onChange={(e) => syncField('description', e.target.value)}
                 placeholder="描述该代码节点的功能..."
                 rows={3}
@@ -166,7 +179,7 @@ export default function NodeConfigPanel({ nodeId, onChatMessage }: NodeConfigPan
               <input
                 className="config-input"
                 type="text"
-                value={localData.file_path || ''}
+                value={val('file_path')}
                 onChange={(e) => syncField('file_path', e.target.value)}
                 placeholder="如: output/analysis.py"
               />
@@ -185,7 +198,7 @@ export default function NodeConfigPanel({ nodeId, onChatMessage }: NodeConfigPan
                 marginTop: 8,
               }}
               onClick={handleOpenInVSCode}
-              disabled={!localData.file_path}
+              disabled={!val('file_path')}
             >
               在 VS Code 中打开
             </button>
@@ -213,7 +226,7 @@ export default function NodeConfigPanel({ nodeId, onChatMessage }: NodeConfigPan
                 工作流执行完成后，此处会显示最终输出内容。
               </p>
             </div>
-            {localData.output && (
+            {val('output') && (
               <div style={{ marginTop: 12 }}>
                 <label className="config-label">输出内容</label>
                 <div
@@ -231,7 +244,7 @@ export default function NodeConfigPanel({ nodeId, onChatMessage }: NodeConfigPan
                     border: '1px solid var(--border-light)',
                   }}
                 >
-                  {localData.output}
+                  {val('output')}
                 </div>
               </div>
             )}

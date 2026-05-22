@@ -1,6 +1,8 @@
 import uuid
+
 from fastapi import APIRouter
 from pydantic import BaseModel
+
 from storage.db import get_db
 
 router = APIRouter(prefix="/api/models", tags=["models"])

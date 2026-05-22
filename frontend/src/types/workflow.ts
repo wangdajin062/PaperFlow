@@ -2,15 +2,15 @@ export interface WorkflowNode {
   id: string;
   type: 'prompt' | 'code' | 'output' | 'start';
   position: { x: number; y: number };
-  data: Record<string, any>;
+  data: Record<string, unknown>;
 }
 
 export interface WorkflowEdge {
   id: string;
   source: string;
   target: string;
-  sourceHandle?: string;
-  targetHandle?: string;
+  sourceHandle?: string | null;
+  targetHandle?: string | null;
 }
 
 export interface Workflow {

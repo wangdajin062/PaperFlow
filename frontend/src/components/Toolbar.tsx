@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { api } from '../utils/api';
 import { __getWorkflowData, __setWorkflowNodes, __setWorkflowEdges } from './WorkflowEditor';
 import { PaperWritingWorkflow } from '../templates/paper-workflow';
+import type { WorkflowNode } from '../types/workflow';
 
 interface ToolbarProps {
   workflowId: string | null;
@@ -28,7 +29,7 @@ export default function Toolbar({ workflowId, onWorkflowSaved }: ToolbarProps) {
     try {
       const payload = {
         name: name || 'Untitled Workflow',
-        nodes: data.nodes,
+        nodes: data.nodes as WorkflowNode[],
         edges: data.edges,
       };
 
@@ -40,7 +41,7 @@ export default function Toolbar({ workflowId, onWorkflowSaved }: ToolbarProps) {
       }
       flashSaved();
     } catch (err) {
-      console.error('Save failed', err);
+      console.error('Save failed', err); // eslint-disable-line no-console
     } finally {
       setSaving(false);
     }
@@ -53,7 +54,7 @@ export default function Toolbar({ workflowId, onWorkflowSaved }: ToolbarProps) {
     try {
       await api.runWorkflow(workflowId);
     } catch (err) {
-      console.error('Run failed', err);
+      console.error('Run failed', err); // eslint-disable-line no-console
     } finally {
       setRunning(false);
     }
