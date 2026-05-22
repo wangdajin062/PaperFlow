@@ -64,12 +64,22 @@ async def init_db():
 
 # --- Workflow CRUD ---
 
+def _row_to_workflow(row: aiosqlite.Row) -> dict:
+    """Convert a DB row to a workflow dict, deserializing JSON fields."""
+    d = dict(row)
+    if isinstance(d.get("nodes"), str):
+        d["nodes"] = json.loads(d["nodes"])
+    if isinstance(d.get("edges"), str):
+        d["edges"] = json.loads(d["edges"])
+    return d
+
+
 async def list_workflows() -> list[dict]:
     db = await get_db()
     try:
         cursor = await db.execute("SELECT * FROM workflows ORDER BY updated_at DESC")
         rows = await cursor.fetchall()
-        return [dict(r) for r in rows]
+        return [_row_to_workflow(r) for r in rows]
     finally:
         await db.close()
 
@@ -79,7 +89,7 @@ async def get_workflow(workflow_id: str) -> Optional[dict]:
     try:
         cursor = await db.execute("SELECT * FROM workflows WHERE id = ?", (workflow_id,))
         row = await cursor.fetchone()
-        return dict(row) if row else None
+        return _row_to_workflow(row) if row else None
     finally:
         await db.close()
 
@@ -103,15 +113,18 @@ async def save_workflow(workflow: dict) -> dict:
             ),
         )
         await db.commit()
-        return await get_workflow(workflow["id"])
+        cursor = await db.execute("SELECT * FROM workflows WHERE id = ?", (workflow["id"],))
+        row = await cursor.fetchone()
+        return _row_to_workflow(row) if row else {}
     finally:
         await db.close()
 
 
-async def delete_workflow(workflow_id: str):
+async def delete_workflow(workflow_id: str) -> bool:
     db = await get_db()
     try:
-        await db.execute("DELETE FROM workflows WHERE id = ?", (workflow_id,))
+        cursor = await db.execute("DELETE FROM workflows WHERE id = ?", (workflow_id,))
         await db.commit()
+        return cursor.rowcount > 0
     finally:
         await db.close()
