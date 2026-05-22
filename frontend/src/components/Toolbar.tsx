@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { api } from '../utils/api';
-import { __getWorkflowData } from './WorkflowEditor';
+import { __getWorkflowData, __setWorkflowNodes, __setWorkflowEdges } from './WorkflowEditor';
+import { PaperWritingWorkflow } from '../templates/paper-workflow';
 
 interface ToolbarProps {
   workflowId: string | null;
@@ -59,7 +60,9 @@ export default function Toolbar({ workflowId, onWorkflowSaved }: ToolbarProps) {
   };
 
   const handleLoadTemplate = () => {
-    // Will be implemented in Task 12: 论文写作工作流模板
+    const { nodes, edges } = PaperWritingWorkflow;
+    __setWorkflowNodes([...nodes]);
+    __setWorkflowEdges([...edges]);
   };
 
   return (
@@ -81,7 +84,7 @@ export default function Toolbar({ workflowId, onWorkflowSaved }: ToolbarProps) {
           onClick={handleLoadTemplate}
           title="Load workflow template"
         >
-          Load Template
+          模板
         </button>
         <button
           className="toolbar-btn primary"
