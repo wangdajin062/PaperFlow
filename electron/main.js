@@ -24,7 +24,9 @@ let backendProcess = null;
 function startBackend() {
   const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
 
-  backendProcess = spawn(pythonCmd, ['-m', 'uvicorn', 'main:app', '--host', '127.0.0.1', '--port', String(BACKEND_PORT), '--reload'], {
+  const args = ['-m', 'uvicorn', 'main:app', '--host', '127.0.0.1', '--port', String(BACKEND_PORT)];
+  if (isDev) args.push('--reload');
+  backendProcess = spawn(pythonCmd, args, {
     cwd: BACKEND_DIR,
     stdio: ['ignore', 'pipe', 'pipe'],
     env: { ...process.env },
