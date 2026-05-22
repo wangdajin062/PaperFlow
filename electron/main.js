@@ -1,6 +1,7 @@
-const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage, shell } = require('electron');
+const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage, shell, dialog } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
+const http = require('http');
 
 // --- Configuration ---
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
@@ -22,22 +23,32 @@ let backendProcess = null;
 // --- Backend Management ---
 
 function startBackend() {
-  const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
-
-  const args = ['-m', 'uvicorn', 'main:app', '--host', '127.0.0.1', '--port', String(BACKEND_PORT)];
-  if (isDev) args.push('--reload');
-  backendProcess = spawn(pythonCmd, args, {
-    cwd: BACKEND_DIR,
-    stdio: ['ignore', 'pipe', 'pipe'],
-    env: { ...process.env },
-  });
+  if (isDev) {
+    // Dev mode: use system python with uvicorn --reload
+    const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+    const args = ['-m', 'uvicorn', 'main:app', '--host', '127.0.0.1', '--port', String(BACKEND_PORT), '--reload'];
+    backendProcess = spawn(pythonCmd, args, {
+      cwd: BACKEND_DIR,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: { ...process.env },
+    });
+  } else {
+    // Production: use bundled portable Python
+    const pythonExe = path.join(BACKEND_DIR, 'python', 'python.exe');
+    const runScript = path.join(BACKEND_DIR, 'run_backend.py');
+    backendProcess = spawn(pythonExe, [runScript], {
+      cwd: BACKEND_DIR,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: { ...process.env },
+    });
+  }
 
   backendProcess.stdout.on('data', (data) => {
     console.log(`[backend] ${data.toString().trim()}`);
   });
 
   backendProcess.stderr.on('data', (data) => {
-    console.error(`[backend] ${data.toString().trim()}`);
+    console.log(`[backend] ${data.toString().trim()}`);
   });
 
   backendProcess.on('error', (err) => {
@@ -62,6 +73,29 @@ function stopBackend() {
     }
     backendProcess = null;
   }
+}
+
+/**
+ * Wait for the backend health endpoint to respond.
+ * Resolves when healthy, rejects after timeout.
+ */
+function waitForBackend(timeoutMs = 15000) {
+  return new Promise((resolve, reject) => {
+    const start = Date.now();
+    function check() {
+      if (Date.now() - start > timeoutMs) {
+        reject(new Error(`Backend did not start within ${timeoutMs}ms`));
+        return;
+      }
+      const req = http.get(`http://127.0.0.1:${BACKEND_PORT}/api/health`, (res) => {
+        if (res.statusCode === 200) resolve();
+        else setTimeout(check, 300);
+      });
+      req.on('error', () => setTimeout(check, 300));
+      req.setTimeout(1000, () => { req.destroy(); setTimeout(check, 300); });
+    }
+    check();
+  });
 }
 
 // --- Window Management ---
@@ -185,7 +219,22 @@ ipcMain.handle('vscode:open', async (_event, args) => {
 app.whenReady().then(() => {
   startBackend();
   createTray();
-  createWindow();
+
+  // Wait for backend to be ready, then show window
+  waitForBackend()
+    .then(() => {
+      createWindow();
+    })
+    .catch((err) => {
+      console.error('[backend] Health check failed:', err.message);
+      dialog.showErrorBox(
+        'Backend Error',
+        'Failed to start the backend server. The application may not function correctly.\n\n' +
+        `Error: ${err.message}`
+      );
+      // Still create the window so user sees something
+      createWindow();
+    });
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

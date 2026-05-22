@@ -40,3 +40,4 @@ Thumbs.db
 # Build
 screenshots/
 *.tsbuildinfo
+backend/dist-portable/

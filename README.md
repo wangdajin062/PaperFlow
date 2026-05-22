@@ -84,6 +84,8 @@ npm start
 ```bash
 cd frontend
 npm run build
+cd ../backend
+python build_portable.py
 cd ../electron
 npm run dist:win
 ```
