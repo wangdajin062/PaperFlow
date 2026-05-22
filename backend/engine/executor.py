@@ -1,7 +1,19 @@
-from typing import Optional
-from ..providers.base import LLMProvider
+import logging
+from collections import deque, defaultdict
+from typing import Any, Optional
+from providers.base import LLMProvider
 from .context import ExecutionContext
 from .nodes import WorkflowNode
+
+logger = logging.getLogger(__name__)
+
+
+def _get_edge_source(e: Any) -> str:
+    return e["source"] if isinstance(e, dict) else e.source
+
+
+def _get_edge_target(e: Any) -> str:
+    return e["target"] if isinstance(e, dict) else e.target
 
 
 class WorkflowExecutor:
@@ -38,6 +50,7 @@ class WorkflowExecutor:
             system_prompt = data.get("system_prompt")
             if provider:
                 return await provider.chat(prompt, system_prompt)
+            logger.warning("Prompt node %s has no provider; returning mock output", node.id)
             return f"[Mock response for: {prompt[:50]}...]"
 
         elif node_type == "code":
@@ -78,15 +91,14 @@ class WorkflowExecutor:
 
         return self.context.get_all_outputs()
 
-    def _topological_sort(self, node_ids: list[str], edges: list[dict]) -> list[str]:
-        from collections import deque, defaultdict
-
+    def _topological_sort(self, node_ids: list[str], edges: list[Any]) -> list[str]:
         in_degree = {nid: 0 for nid in node_ids}
         adj = defaultdict(list)
 
         for e in edges:
-            adj[e["source"]].append(e["target"])
-            in_degree[e["target"]] = in_degree.get(e["target"], 0) + 1
+            src, tgt = _get_edge_source(e), _get_edge_target(e)
+            adj[src].append(tgt)
+            in_degree[tgt] = in_degree.get(tgt, 0) + 1
 
         queue = deque([nid for nid, deg in in_degree.items() if deg == 0])
         result = []
@@ -98,5 +110,11 @@ class WorkflowExecutor:
                 in_degree[neighbor] -= 1
                 if in_degree[neighbor] == 0:
                     queue.append(neighbor)
+
+        if len(result) != len(node_ids):
+            raise ValueError(
+                "Workflow graph contains a cycle; cannot execute. "
+                f"Processed {len(result)}/{len(node_ids)} nodes."
+            )
 
         return result
